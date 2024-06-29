@@ -183,7 +183,7 @@ footer a {
   padding: 10px;
   border-radius: 8px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   margin-top: 4px;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -269,6 +269,11 @@ select {
   border-top: none;
   background-color: #f6f6f6;
 
+}
+
+.breaking-rows {
+  display: flex;
+  flex-direction: row;
 }
 
 .fancy-accordion-wrapper {
@@ -380,7 +385,7 @@ select {
   /* End of Accordion */
 
 /*** Medias ***/
-@media screen and (max-width: 910px) {
+@media screen and (max-width: 1310px) {
   .toolbar {
     flex-direction: column;
     align-items: center;
@@ -388,6 +393,10 @@ select {
 
   .toolbar-row {
     margin-bottom: 4px;
+  }
+
+  .breaking-rows {
+    flex-direction: column;
   }
 }
 
@@ -400,6 +409,10 @@ select {
   .box-container-rounded {
     margin-right: 0;
     margin-bottom: 10px;
+  }
+
+  .breaking-rows {
+    flex-direction: column;
   }
 }
 
