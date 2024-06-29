@@ -2,7 +2,7 @@
 <!--
 MIT License
 
-Copyright (c) 2024 Stephany Ceron Salas
+Copyright (c) 2024 Jason Benoit & Stephany Ceron Salas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -97,30 +97,30 @@ SOFTWARE.
                     </select>
                     <div class="color">
                         <span for="headerColor">Header Colour</span>
-                        <input type="color" id="headerColor" class="adv-option-button"
-                            onchange="applyHeaderFontColor(this.value)" value="#FFFFFF" />
+                        <input type="color" id="headerColor" class="adv-option-button" value="#FFFFFF" />
                     </div>
 
                     <div class="color">
                         <span for="headerBg">Header Background</span>
-                        <input type="color" id="headerBg" class="adv-option-button"
-                            onchange="applyHeaderBgColor(this.value)" value="#3B5372" />
+                        <input type="color" id="headerBg" class="adv-option-button" value="#3B5372" />
                     </div>
                     <div class="color">
                         <span for="bodyColor">Body Colour</span>
-                        <input type="color" id="bodyColor" class="adv-option-button"
-                            onchange="applyBodyFontColor(this.value)" value="#000000" />
+                        <input type="color" id="bodyColor" class="adv-option-button" value="#000000" />
                     </div>
                     <div class="color">
                         <span for="bodyBg">Body Background</span>
-                        <input type="color" id="bodyBg" class="adv-option-button"
-                            onchange="applyBodyBgColor(this.value)" value="#FFFFFF" />
+                        <input type="color" id="bodyBg" class="adv-option-button" value="#FFFFFF" />
+                    </div>
+                    <div class="color">
+                        <span for="number">Number</span>
+                        <input type="number" id="numAccordions" onchange="setNumber(this.value)" value="1" class="adv-option-button"/>
                     </div>
                 </div>
             </div>
 
             <div id="preview-accordion" contenteditable="true">
-                <div class="fancy-accordion-wrapper">
+                <div class="fancy-accordion-wrapper" onclick="setSelectedAccordion(this)">
 
                     <details class="fancy-accordion"><summary> Header Content Here </summary>
                     
@@ -151,6 +151,7 @@ SOFTWARE.
 
                 <div id="css" class="tabcontent">
                     <p>Copy and paste this code into the Custom Styles of Pressbooks!</p>
+                    <p>NOTE: You only have to do this once.</p>
                     <button id="btn-copy-generated-css" onclick="copy('generated-css')">
                         <i class="fa-regular fa-copy"></i>
                         Copy 
