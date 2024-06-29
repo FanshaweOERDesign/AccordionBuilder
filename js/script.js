@@ -1,9 +1,10 @@
 
 const previewChartContainer = document.getElementById('preview-accordion');
-let headerBackgroundColor = "#0b6396";
-let bodyBackgroundColor = "#FFF";
-let bodyColor = "#000";
-let headerColor = "#fff";
+const headerBackgroundColor = "#0b6396";
+const bodyBackgroundColor = "#FFFFFF";
+const bodyColor = "#000000";
+const headerColor = "#ffffff";
+let currentlySelectedAccordion = document.getElementById('preview-accordion').querySelector('div.fancy-accordion-wrapper');
 
 previewChartContainer.addEventListener('input', generateHTML);
 
@@ -23,17 +24,53 @@ function generateHTML() {
 	Prism.highlightElement(htmlOutput);
 }
 
-function updateHTML() {
+function updateHTML(accordion) {
 
-	let editorContent = document.getElementById('preview-accordion');
-	let accordionHeader = editorContent.querySelector('details.fancy-accordion > summary');
-	let accordionBody = editorContent.querySelector('details.fancy-accordion');
-	accordionHeader.style.backgroundColor = headerBackgroundColor;
-	accordionHeader.style.color = headerColor;
-	accordionBody.style.backgroundColor = bodyBackgroundColor;
-	accordionBody.style.color = bodyColor;
-	accordionBody.style.borderColor = headerBackgroundColor;
-	generateHTML();
+		let accordionHeader = currentlySelectedAccordion.querySelector('details.fancy-accordion > summary');
+		let accordionBody = currentlySelectedAccordion.querySelector('details.fancy-accordion');
+		accordionHeader.style.backgroundColor = document.getElementById("headerBg").value;
+		accordionHeader.style.color = document.getElementById("headerColor").value;
+		accordionBody.style.backgroundColor = document.getElementById("bodyBg").value;
+		accordionBody.style.color = document.getElementById("bodyColor").value;
+		accordionBody.style.borderColor = document.getElementById("headerBg").value;
+		generateHTML();
+	
+}
+
+function setSelectedAccordion(accordion) {
+	
+	function componentToHex(c) {
+		var hex = c.toString(16);
+		return hex.length == 1 ? "0" + hex : hex;
+	  }
+	  
+	  function rgbToHex(rgb) {
+		let vals = rgb.substring(rgb.indexOf('(') + 1, rgb.indexOf(')')).split(',');
+		let hex = "#";
+		for (const val of vals){
+			if (!val || val.length === 0){
+				continue;
+			}
+			hex += componentToHex(Number.parseInt(val.trim()));
+		}
+		return hex;
+	  }
+	
+	currentlySelectedAccordion = accordion;
+	let accordionHeader = accordion.querySelector('details.fancy-accordion > summary');
+	let accordionBody = accordion.querySelector('details.fancy-accordion');
+	let headerBgSelector = document.getElementById("headerBg");
+	let headerColorSelector = document.getElementById("headerColor");
+	let bodyBgSelector = document.getElementById("bodyBg");
+	let bodyColorSelector = document.getElementById("bodyColor");
+
+	console.info("%o", accordionHeader.style.backgroundColor);
+
+	headerBgSelector.value = accordionHeader.style.backgroundColor.length > 0 ? rgbToHex(accordionHeader.style.backgroundColor) : headerBackgroundColor;
+	headerColorSelector.value = accordionHeader.style.color.length > 0 ? rgbToHex(accordionHeader.style.color) : headerColor;
+	bodyBgSelector.value = accordionBody.style.backgroundColor.length > 0 ? rgbToHex(accordionBody.style.backgroundColor) : bodyBackgroundColor;
+	bodyColorSelector.value = accordionBody.style.color.length > 0 ? rgbToHex(accordionBody.style.color) : bodyColor;
+	
 }
 
 function generateCSS() {
@@ -154,24 +191,41 @@ function execCmd(command, value = null) {
 	generateHTML();
 }
 
-function applyHeaderBgColor(color) {
-	headerBackgroundColor = color;
-	updateHTML();
-}
+function setNumber(num) {
 
-function applyBodyFontColor(color) {
-	bodyColor = color;
-	updateHTML();
-}
+	let preview = document.getElementById("preview-accordion");
+	let currentAccordions = preview.querySelectorAll("div.fancy-accordion-wrapper");
+	const accordionHTML = `<div class="fancy-accordion-wrapper" onclick="setSelectedAccordion(this)">
 
-function applyHeaderFontColor(color) {
-	headerColor = color;
-	updateHTML();
-}
+                    <details class="fancy-accordion"><summary> Header Content Here </summary>
+                    
+                    <div class="collapsed">
+                    
+                    HIDDEN TEXT HERE
+                    
+                    </div>
+                    
+                    </details>
+                    
+                </div>`;
 
-function applyBodyBgColor(color) {
-	bodyBackgroundColor = color;
-	updateHTML();
+	if (num > currentAccordions.length) {
+
+		for (let i = 0; i < (num - currentAccordions.length); i++){
+
+			preview.innerHTML += accordionHTML;
+		}
+	}
+	else if (num < currentAccordions.length) {
+
+		for (let i = 0; i < (currentAccordions.length - num); i++){
+
+			preview.removeChild(currentAccordions[currentAccordions.length - i - 1]);
+		}
+	}
+
+	generateHTML();
+
 }
 
 function openTab(evt, tab) {
@@ -201,10 +255,10 @@ function copy(id) {
 };
 
 function startup() {
+	const colourSelectors = document.querySelectorAll("input[type=color]");
+	for (let c of colourSelectors){
+		c.addEventListener("change", updateHTML);
+	}
 	generateCSS();
 	generateHTML();
 }
-
-
-
-
