@@ -2,7 +2,7 @@
 <!--
 MIT License
 
-Copyright (c) 2024 Jason Benoit & Stephany Ceron Salas
+Copyright (c) 2024 Stephany Ceron Salas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,80 +41,88 @@ SOFTWARE.
         <h1 class="page-title">Accordion Builder</h1>
         <div id="tools-container">
             <div class="toolbar">
-                <div class="toolbar-row">
-                    <button id="bold" onclick="execCmd('bold')">
-                        <i class="fa-solid fa-bold"></i>
-                    </button>
-                    <button id="italic" onclick="execCmd('italic')">
-                        <i class="fa-solid fa-italic"></i>
-                    </button>
-                    <button id="underline" onclick="execCmd('underline')">
-                        <i class="fa-solid fa-underline"></i>
-                    </button>
-                    <!-- List -->
-                    <button id="insertOrderedList" onclick="execCmd('insertOrderedList')">
-                        <div class="fa-solid fa-list-ol"></div>
-                    </button>
-                    <button id="insertUnorderedList" onclick="execCmd('insertUnorderedList')">
-                        <i class="fa-solid fa-list"></i>
-                    </button>
-                    <!-- Undo/Redo -->
-                    <button id="undo" onclick="execCmd('undo')">
-                        <i class="fa-solid fa-rotate-left"></i>
-                    </button>
-                    <button id="redo" onclick="execCmd('redo')">
-                        <i class="fa-solid fa-rotate-right"></i>
-                    </button>
-                    <!-- Link -->
-                    <button id="createLink" onclick="execCmd('createLink')">
-                        <i class="fa fa-link"></i>
-                    </button>
-                    <button id="unlink" onclick="execCmd('unlink')">
-                        <i class="fa fa-unlink"></i>
-                    </button>
+                <div class="breaking-rows">
+                    <div class="toolbar-row">
+                        <button id="bold" onclick="execCmd('bold')">
+                            <i class="fa-solid fa-bold"></i>
+                        </button>
+                        <button id="italic" onclick="execCmd('italic')">
+                            <i class="fa-solid fa-italic"></i>
+                        </button>
+                        <button id="underline" onclick="execCmd('underline')">
+                            <i class="fa-solid fa-underline"></i>
+                        </button>
+                        <!-- List -->
+                        <button id="insertOrderedList" onclick="execCmd('insertOrderedList')">
+                            <div class="fa-solid fa-list-ol"></div>
+                        </button>
+                        <button id="insertUnorderedList" onclick="execCmd('insertUnorderedList')">
+                            <i class="fa-solid fa-list"></i>
+                        </button>
+                        <!-- Undo/Redo -->
+                        <button id="undo" onclick="execCmd('undo')">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                        <button id="redo" onclick="execCmd('redo')">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                        <!-- Link -->
+                        <button id="createLink" onclick="execCmd('createLink')">
+                            <i class="fa fa-link"></i>
+                        </button>
+                        <button id="unlink" onclick="execCmd('unlink')">
+                            <i class="fa fa-unlink"></i>
+                        </button>
+                        <!-- Alignment -->
+                        <button id="justifyLeft" onclick="execCmd('justifyLeft')">
+                            <i class="fa-solid fa-align-left"></i>
+                        </button>
+                        <button id="justifyCenter" onclick="execCmd('justifyCenter')">
+                            <i class="fa-solid fa-align-center"></i>
+                        </button>
+                        <button id="justifyRight" onclick="execCmd('justifyRight')">
+                            <i class="fa-solid fa-align-right"></i>
+                        </button>
+                        <!-- Headings -->
+                        <select id="formatBlock" class="adv-option-button" onchange="execCmd('formatBlock', this.value)">
+                            <option value="P">Paragraph</option>
+                            <option value="H1">Heading 1</option>
+                            <option value="H2">Heading 2</option>
+                            <option value="H3">Heading 3</option>
+                            <option value="H4">Heading 4</option>
+                            <option value="H5">Heading 5</option>
+                            <option value="H6">Heading 6</option>
+                        </select>
+                    </div>
+                    <div class="toolbar-row">
+                        <div class="color">
+                            <span for="headerColor">Header Text</span>
+                            <input type="color" id="headerColor" class="adv-option-button" value="#FFFFFF" />
+                        </div>
+
+                        <div class="color">
+                            <span for="headerBg">Header Background</span>
+                            <input type="color" id="headerBg" class="adv-option-button" value="#3B5372" />
+                        </div>
+                        <div class="color">
+                            <span for="bodyColor">Body Text</span>
+                            <input type="color" id="bodyColor" class="adv-option-button" value="#000000" />
+                        </div>
+                        <div class="color">
+                            <span for="bodyBg">Body Background</span>
+                            <input type="color" id="bodyBg" class="adv-option-button" value="#FFFFFF" />
+                        </div>
+                        
+                    </div>
                 </div>
-
                 <div class="toolbar-row">
-                    <!-- Alignment -->
-                    <button id="justifyLeft" onclick="execCmd('justifyLeft')">
-                        <i class="fa-solid fa-align-left"></i>
-                    </button>
-                    <button id="justifyCenter" onclick="execCmd('justifyCenter')">
-                        <i class="fa-solid fa-align-center"></i>
-                    </button>
-                    <button id="justifyRight" onclick="execCmd('justifyRight')">
-                        <i class="fa-solid fa-align-right"></i>
-                    </button>
-                    <!-- Headings -->
-                    <select id="formatBlock" class="adv-option-button" onchange="execCmd('formatBlock', this.value)">
-                        <option value="P">Paragraph</option>
-                        <option value="H1">Heading 1</option>
-                        <option value="H2">Heading 2</option>
-                        <option value="H3">Heading 3</option>
-                        <option value="H4">Heading 4</option>
-                        <option value="H5">Heading 5</option>
-                        <option value="H6">Heading 6</option>
-                    </select>
                     <div class="color">
-                        <span for="headerColor">Header Colour</span>
-                        <input type="color" id="headerColor" class="adv-option-button" value="#FFFFFF" />
-                    </div>
-
-                    <div class="color">
-                        <span for="headerBg">Header Background</span>
-                        <input type="color" id="headerBg" class="adv-option-button" value="#3B5372" />
+                        <span for="number">Number of Accordions:</span>
+                        <input type="number" id="numAccordions" onchange="setNumber(this.value)" value="1" min="1" class="adv-option-button"/>
                     </div>
                     <div class="color">
-                        <span for="bodyColor">Body Colour</span>
-                        <input type="color" id="bodyColor" class="adv-option-button" value="#000000" />
-                    </div>
-                    <div class="color">
-                        <span for="bodyBg">Body Background</span>
-                        <input type="color" id="bodyBg" class="adv-option-button" value="#FFFFFF" />
-                    </div>
-                    <div class="color">
-                        <span for="number">Number</span>
-                        <input type="number" id="numAccordions" onchange="setNumber(this.value)" value="1" class="adv-option-button"/>
+                        <span for="uniformColours">Uniform Colours</span>
+                        <input type="checkbox" id="uniformColours" onchange="updateHTML()" checked class="adv-option-button"/>
                     </div>
                 </div>
             </div>
