@@ -24,7 +24,29 @@ function generateHTML() {
 	Prism.highlightElement(htmlOutput);
 }
 
-function updateHTML(accordion) {
+function updateHTML() {
+
+		let uniformColours = document.getElementById("uniformColours").checked;
+
+		if (uniformColours){
+
+			let editor = document.getElementById("preview-accordion");
+			let accordionHeaders = editor.querySelectorAll('details.fancy-accordion > summary');
+			let accordionBodies = editor.querySelectorAll('details.fancy-accordion');
+
+			for (let header of accordionHeaders){
+				header.style.backgroundColor = document.getElementById("headerBg").value;
+				header.style.color = document.getElementById("headerColor").value;
+			}
+
+			for (let body of accordionBodies){
+				body.style.backgroundColor = document.getElementById("bodyBg").value;
+				body.style.color = document.getElementById("bodyColor").value;
+				body.style.borderColor = document.getElementById("headerBg").value;
+			}
+
+			return;
+		}
 
 		let accordionHeader = currentlySelectedAccordion.querySelector('details.fancy-accordion > summary');
 		let accordionBody = currentlySelectedAccordion.querySelector('details.fancy-accordion');
@@ -262,3 +284,7 @@ function startup() {
 	generateCSS();
 	generateHTML();
 }
+
+
+
+
