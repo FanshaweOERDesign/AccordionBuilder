@@ -6,7 +6,58 @@ const bodyColor = "#000000";
 const headerColor = "#ffffff";
 let currentlySelectedAccordion = document.getElementById('preview-accordion').querySelector('div.fancy-accordion-wrapper');
 
+let UndoManager = function (){
+
+	this._undoStack = [];
+	this._idx = 0;
+	this.backup = function (){
+
+		let currentState = {
+			headerBg: document.getElementById("headerBg").value, 
+			headerColor: document.getElementById("headerColor").value,
+			bodyBg: document.getElementById("bodyBg").value,
+			bodyColor: document.getElementById("bodyColor").value,
+			numAccordions: document.getElementById("numAccordions").value,
+			html: document.getElementById('preview-accordion').innerHTML 
+			}; 
+		this._undoStack.splice(this._idx + 1);
+		this._undoStack.push(currentState);
+		this._idx = this._undoStack.length - 1;
+	};
+
+	this.undo = function() { 
+
+		if (this._idx === 0){
+
+			return;
+		}
+
+		let prevState = this._undoStack[--this._idx];
+
+		console.info("prevState: %o", prevState);
+
+		setColourSelectors(prevState.headerBg, prevState.headerColor, prevState.bodyBg, prevState.bodyColor);
+		document.getElementById("numAccordions").value = prevState.numAccordions;
+		document.getElementById('preview-accordion').innerHTML = prevState.html;
+	};
+	this.redo = function() {
+
+		if (this._idx === this._undoStack.length - 1){
+			
+			return;
+		}
+
+		let	redoState = this._undoStack[++this._idx];
+
+		setColourSelectors(redoState.headerBg, redoState.headerColor, redoState.bodyBg, redoState.bodyColor);
+		document.getElementById('preview-accordion').innerHTML = redoState.html;
+		document.getElementById('numAccordions').value = redoState.numAccordions;
+		generateHTML();
+	}
+}
+
 previewChartContainer.addEventListener('input', generateHTML);
+let undoManager;
 
 
 function generateHTML() {
@@ -26,6 +77,7 @@ function generateHTML() {
 
 function updateHTML() {
 
+		
 		let uniformColours = document.getElementById("uniformColours").checked;
 
 		if (uniformColours){
@@ -44,7 +96,8 @@ function updateHTML() {
 				body.style.color = document.getElementById("bodyColor").value;
 				body.style.borderColor = document.getElementById("headerBg").value;
 			}
-
+			undoManager.backup();
+			generateHTML();
 			return;
 		}
 
@@ -55,45 +108,59 @@ function updateHTML() {
 		accordionBody.style.backgroundColor = document.getElementById("bodyBg").value;
 		accordionBody.style.color = document.getElementById("bodyColor").value;
 		accordionBody.style.borderColor = document.getElementById("headerBg").value;
+		undoManager.backup();
 		generateHTML();
-	
+		
 }
 
-function setSelectedAccordion(accordion) {
-	
+function rgbToHex(rgb) {
+
 	function componentToHex(c) {
 		var hex = c.toString(16);
 		return hex.length == 1 ? "0" + hex : hex;
 	  }
-	  
-	  function rgbToHex(rgb) {
-		let vals = rgb.substring(rgb.indexOf('(') + 1, rgb.indexOf(')')).split(',');
-		let hex = "#";
-		for (const val of vals){
-			if (!val || val.length === 0){
-				continue;
-			}
-			hex += componentToHex(Number.parseInt(val.trim()));
+
+	//check if already in hex format
+	if (rgb.indexOf('#') === 0){
+		return rgb;
+	}
+	let vals = rgb.substring(rgb.indexOf('(') + 1, rgb.indexOf(')')).split(',');
+	let hex = "#";
+	for (const val of vals){
+		if (!val || val.length === 0){
+			continue;
 		}
-		return hex;
-	  }
-	
-	currentlySelectedAccordion = accordion;
-	let accordionHeader = accordion.querySelector('details.fancy-accordion > summary');
-	let accordionBody = accordion.querySelector('details.fancy-accordion');
+		hex += componentToHex(Number.parseInt(val.trim()));
+	}
+	return hex;
+  }
+
+function setColourSelectors(headerBg, header, bodyBg, body){
+
+
 	let headerBgSelector = document.getElementById("headerBg");
 	let headerColorSelector = document.getElementById("headerColor");
 	let bodyBgSelector = document.getElementById("bodyBg");
 	let bodyColorSelector = document.getElementById("bodyColor");
 
-	console.info("%o", accordionHeader.style.backgroundColor);
+	headerBgSelector.value = headerBg.length > 0 ? rgbToHex(headerBg) : headerBackgroundColor;
+	headerColorSelector.value = header.length > 0 ? rgbToHex(header) : headerColor;
+	bodyBgSelector.value = bodyBg.length > 0 ? rgbToHex(bodyBg) : bodyBackgroundColor;
+	bodyColorSelector.value = body.length > 0 ? rgbToHex(body) : bodyColor;
 
-	headerBgSelector.value = accordionHeader.style.backgroundColor.length > 0 ? rgbToHex(accordionHeader.style.backgroundColor) : headerBackgroundColor;
-	headerColorSelector.value = accordionHeader.style.color.length > 0 ? rgbToHex(accordionHeader.style.color) : headerColor;
-	bodyBgSelector.value = accordionBody.style.backgroundColor.length > 0 ? rgbToHex(accordionBody.style.backgroundColor) : bodyBackgroundColor;
-	bodyColorSelector.value = accordionBody.style.color.length > 0 ? rgbToHex(accordionBody.style.color) : bodyColor;
-	
 }
+
+function setSelectedAccordion(accordion) {
+	
+	currentlySelectedAccordion = accordion;
+	let accordionHeader = accordion.querySelector('details.fancy-accordion > summary');
+	let accordionBody = accordion.querySelector('details.fancy-accordion');
+
+	setColourSelectors(accordionHeader.style.backgroundColor, accordionHeader.style.color, accordionBody.style.backgroundColor, accordionBody.style.color);
+
+}
+
+
 
 function generateCSS() {
 	const cssOutput = document.getElementById('generated-css');
@@ -208,13 +275,30 @@ function execCmd(command, value = null) {
 			document.execCommand(command, false, url);
 		}
 	} else {
-		document.execCommand(command, false, value);
+		
+
+		if (command === 'undo'){
+
+			undoManager.undo();
+
+		} else if (command === 'redo'){
+			
+			undoManager.redo();
+		}
+		else{
+
+			document.execCommand(command, false, value);
+		}
+
+		
+			
 	}
 	generateHTML();
 }
 
 function setNumber(num) {
 
+	
 	let preview = document.getElementById("preview-accordion");
 	let currentAccordions = preview.querySelectorAll("div.fancy-accordion-wrapper");
 	const accordionHTML = `<div class="fancy-accordion-wrapper" onclick="setSelectedAccordion(this)">
@@ -246,7 +330,7 @@ function setNumber(num) {
 		}
 	}
 
-	generateHTML();
+	updateHTML();
 
 }
 
@@ -274,7 +358,7 @@ function copy(id) {
 	setTimeout(() => {
 			copyButton.innerHTML = originalText;
 	}, 2000);
-};
+}
 
 function startup() {
 	const colourSelectors = document.querySelectorAll("input[type=color]");
@@ -283,6 +367,9 @@ function startup() {
 	}
 	generateCSS();
 	generateHTML();
+	undoManager = new UndoManager();
+	undoManager.backup();
+	document.getElementById('preview-accordion').addEventListener("keyup", () => {undoManager.backup()});
 }
 
 
