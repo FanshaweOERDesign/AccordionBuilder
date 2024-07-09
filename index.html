@@ -2,7 +2,7 @@
 <!--
 MIT License
 
-Copyright (c) 2024 Jason Benoit & Stephany Ceron Salas
+Copyright (c) 2024 Stephany Ceron Salas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -84,14 +84,14 @@ SOFTWARE.
                             <i class="fa-solid fa-align-right"></i>
                         </button>
                         <!-- Headings -->
-                        <select id="formatBlock" class="adv-option-button" onchange="execCmd('formatBlock', this.value)">
-                            <option value="P">Paragraph</option>
-                            <option value="H1">Heading 1</option>
-                            <option value="H2">Heading 2</option>
-                            <option value="H3">Heading 3</option>
-                            <option value="H4">Heading 4</option>
-                            <option value="H5">Heading 5</option>
-                            <option value="H6">Heading 6</option>
+                        <select id="formatBlock" class="adv-option-button" onchange="applyBlockFormatting(this.value)">
+                            <option value="span">Paragraph</option>
+                            <option value="h1">Heading 1</option>
+                            <option value="h2">Heading 2</option>
+                            <option value="h3">Heading 3</option>
+                            <option value="h4">Heading 4</option>
+                            <option value="h5">Heading 5</option>
+                            <option value="h6">Heading 6</option>
                         </select>
                     </div>
                     <div class="toolbar-row">
@@ -128,9 +128,9 @@ SOFTWARE.
             </div>
 
             <div id="preview-accordion" contenteditable="true">
-                <div class="fancy-accordion-wrapper" onclick="setSelectedAccordion(this)">
+                <div class="fancy-accordion-wrapper">
 
-                    <details class="fancy-accordion"><summary> Header Content Here </summary>
+                    <details class="fancy-accordion"><summary><span class="summary"> Header Content Here</summary>
                     
                     <div class="collapsed">
                     
@@ -182,5 +182,4 @@ SOFTWARE.
     <script src="js/script.js"></script>
 
 </body>
-
 </html>
