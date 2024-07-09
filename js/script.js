@@ -59,8 +59,46 @@ let UndoManager = function (){
 previewChartContainer.addEventListener('input', generateHTML);
 let undoManager;
 
+function applyBlockFormatting(format) {
+    const selection = window.getSelection();
+    
+    if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+		let parentNode = range.startContainer.parentElement;
+		console.log("range: " + range.toString());
+		if ((parentNode.tagName === 'SPAN' || parentNode.tagName[0] === 'H') && parentNode.innerHTML === range.toString()){
+
+			const span = document.createElement(format);
+			span.innerHTML = parentNode.innerHTML;
+			parentNode.parentElement.replaceChild(span, parentNode);
+
+		}
+		else {
+			const selectedText = range.extractContents();
+			const span = document.createElement(format);
+			span.appendChild(selectedText);
+
+			range.insertNode(span);
+		}
+		updateHTML();
+    }
+}
+
+function removeTagKeepContents(element) {
+    if (element) {
+        // Move all child nodes out of the element
+        while (element.firstChild) {
+            element.parentNode.insertBefore(element.firstChild, element);
+        }
+        // Remove the empty element
+        element.parentNode.removeChild(element);
+    }
+}
+
 
 function generateHTML() {
+
+
 	let editorContent = document.getElementById('preview-accordion').innerHTML;
 	editorContent = editorContent.replaceAll('contenteditable="true"', '');
 	editorContent = editorContent.replaceAll('spellcheck="false"', '');
@@ -68,6 +106,7 @@ function generateHTML() {
 	editorContent = editorContent.replace(/<i>(.*?)<\/i>/g, '<em>$1</em>');
 	editorContent = editorContent.replace(/<u>(.*?)<\/u>/g, '<span style="text-decoration: underline;">$1</span>');
 	editorContent = editorContent.replace(/<u>(.*?)<\/u>/g, '<span style="text-decoration: underline;">$1</span>');
+
 
 	const htmlOutput = document.getElementById('generated-html');
 	const formattedHTML = html_beautify(editorContent);
@@ -77,6 +116,13 @@ function generateHTML() {
 
 function updateHTML() {
 
+		// clean up any useless spans
+		let spans = document.getElementById('preview-accordion').querySelectorAll('span');
+		for (let span of spans){
+			if (span.attributes.length === 0){
+				removeTagKeepContents(span);
+			}
+		}
 		
 		let uniformColours = document.getElementById("uniformColours").checked;
 
@@ -85,6 +131,7 @@ function updateHTML() {
 			let editor = document.getElementById("preview-accordion");
 			let accordionHeaders = editor.querySelectorAll('details.fancy-accordion > summary');
 			let accordionBodies = editor.querySelectorAll('details.fancy-accordion');
+			let wrappers = editor.querySelectorAll('div.fancy-accordion-wrapper');
 
 			for (let header of accordionHeaders){
 				header.style.backgroundColor = document.getElementById("headerBg").value;
@@ -96,6 +143,11 @@ function updateHTML() {
 				body.style.color = document.getElementById("bodyColor").value;
 				body.style.borderColor = document.getElementById("headerBg").value;
 			}
+
+			for (let wrapper of wrappers){
+				wrapper.addEventListener("click", () => {setSelectedAccordion(wrapper)});
+			}
+
 			undoManager.backup();
 			generateHTML();
 			return;
@@ -158,8 +210,21 @@ function setSelectedAccordion(accordion) {
 
 	setColourSelectors(accordionHeader.style.backgroundColor, accordionHeader.style.color, accordionBody.style.backgroundColor, accordionBody.style.color);
 
-}
+	// get tag name of the selected text range and set the format block to it
+	const selection = window.getSelection();
+	const range = selection.getRangeAt(0);
+	const tagName = range.startContainer.parentElement.tagName.toLowerCase();
 
+	if (tagName[0] === 'h' && tagName.length === 2){
+
+		document.getElementById('formatBlock').value = tagName;	
+	}
+	else {
+
+		document.getElementById('formatBlock').value = 'span';
+	}
+
+}
 
 
 function generateCSS() {
@@ -301,7 +366,7 @@ function setNumber(num) {
 	
 	let preview = document.getElementById("preview-accordion");
 	let currentAccordions = preview.querySelectorAll("div.fancy-accordion-wrapper");
-	const accordionHTML = `<div class="fancy-accordion-wrapper" onclick="setSelectedAccordion(this)">
+	const accordionHTML = `<div class="fancy-accordion-wrapper">
 
                     <details class="fancy-accordion"><summary> Header Content Here </summary>
                     
@@ -360,6 +425,77 @@ function copy(id) {
 	}, 2000);
 }
 
+function handleEnterPress() {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+
+    // Insert new paragraph
+    insertParagraphAtCaret();
+	updateHTML();
+}
+
+function isWrappedInBlock(node) {
+    let parent = node.parentNode;
+    while (parent && parent !== document.body) {
+        if (parent.nodeName === 'P') {
+            return true;
+        }
+        parent = parent.parentNode;
+    }
+    return false;
+}
+
+function wrapInParagraph(node, isPreceding) {
+    const paragraph = document.createElement('p');
+    const parent = node.parentNode;
+    const textContent = node.nodeValue;
+
+    if (isPreceding) {
+        paragraph.textContent = textContent.trim();
+        parent.insertBefore(paragraph, node);
+    } else {
+        const newNode = document.createTextNode(textContent.trim());
+        paragraph.appendChild(newNode);
+        parent.replaceChild(paragraph, node);
+    }
+
+    node.nodeValue = ''; // Clear the original text node
+}
+
+function insertParagraphAtCaret() {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+    range.deleteContents();
+
+    const paragraph = document.createElement('div');
+	paragraph.innerHTML = '&nbsp;';
+
+	if (range.startContainer.parentElement.textContent.trim().length > 0){
+
+		range.insertNode(paragraph);
+		// Move the caret to the inside of the new paragraph
+		range.setStartAfter(paragraph, 0);
+		range.setEndAfter(paragraph, 0);
+		selection.removeAllRanges();
+		selection.addRange(range);
+
+	}
+	else {
+		
+		let parent = range.startContainer.parentElement;
+		parent.insertBefore(paragraph, range.startContainer.nextSibling);
+		range.setStartAfter(paragraph, 0);
+		range.setEndAfter(paragraph, 0);
+		selection.removeAllRanges();
+		selection.addRange(range);
+	
+	}
+}
+
 function startup() {
 	const colourSelectors = document.querySelectorAll("input[type=color]");
 	for (let c of colourSelectors){
@@ -369,7 +505,21 @@ function startup() {
 	generateHTML();
 	undoManager = new UndoManager();
 	undoManager.backup();
-	document.getElementById('preview-accordion').addEventListener("keyup", () => {undoManager.backup()});
+	document.getElementById('preview-accordion').addEventListener("keyup", () => {
+		
+			undoManager.backup();
+	});
+	document.getElementById('preview-accordion').addEventListener("keydown", (event) => {
+		
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			handleEnterPress();
+		}
+	});
+	let wrappers = document.getElementById('preview-accordion').querySelectorAll('details.fancy-accordion-wrapper');
+	for (let wrapper of wrappers){
+		wrapper.addEventListener("click", () => {setSelectedAccordion(wrapper)});
+	}
 }
 
 
