@@ -107,6 +107,7 @@ function generateHTML() {
 	editorContent = editorContent.replace(/<u>(.*?)<\/u>/g, '<span style="text-decoration: underline;">$1</span>');
 	editorContent = editorContent.replace(/<u>(.*?)<\/u>/g, '<span style="text-decoration: underline;">$1</span>');
 
+	editorContent = editorContent.replace(/<div>&nbsp;<\/div>/g, '<div></div>');
 
 	const htmlOutput = document.getElementById('generated-html');
 	const formattedHTML = html_beautify(editorContent);
@@ -436,34 +437,6 @@ function handleEnterPress() {
 	updateHTML();
 }
 
-function isWrappedInBlock(node) {
-    let parent = node.parentNode;
-    while (parent && parent !== document.body) {
-        if (parent.nodeName === 'P') {
-            return true;
-        }
-        parent = parent.parentNode;
-    }
-    return false;
-}
-
-function wrapInParagraph(node, isPreceding) {
-    const paragraph = document.createElement('p');
-    const parent = node.parentNode;
-    const textContent = node.nodeValue;
-
-    if (isPreceding) {
-        paragraph.textContent = textContent.trim();
-        parent.insertBefore(paragraph, node);
-    } else {
-        const newNode = document.createTextNode(textContent.trim());
-        paragraph.appendChild(newNode);
-        parent.replaceChild(paragraph, node);
-    }
-
-    node.nodeValue = ''; // Clear the original text node
-}
-
 function insertParagraphAtCaret() {
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
@@ -474,15 +447,16 @@ function insertParagraphAtCaret() {
     const paragraph = document.createElement('div');
 	paragraph.innerHTML = '&nbsp;';
 
+	// Do not nest empty divs within empty divs
 	if (range.startContainer.parentElement.textContent.trim().length > 0){
 
 		range.insertNode(paragraph);
-		// Move the caret to the inside of the new paragraph
+		
+		// Move the caret past the new paragraph
 		range.setStartAfter(paragraph, 0);
 		range.setEndAfter(paragraph, 0);
 		selection.removeAllRanges();
 		selection.addRange(range);
-
 	}
 	else {
 		
@@ -492,7 +466,6 @@ function insertParagraphAtCaret() {
 		range.setEndAfter(paragraph, 0);
 		selection.removeAllRanges();
 		selection.addRange(range);
-	
 	}
 }
 
@@ -521,7 +494,3 @@ function startup() {
 		wrapper.addEventListener("click", () => {setSelectedAccordion(wrapper)});
 	}
 }
-
-
-
-
