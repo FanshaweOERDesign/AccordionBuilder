@@ -413,7 +413,7 @@ function setNumber(num) {
 	let currentAccordions = preview.querySelectorAll("div.fancy-accordion-wrapper");
 	const accordionHTML = `<div class="fancy-accordion-wrapper">
 
-                    <details class="fancy-accordion"><summary contenteditable="true"> Header Content Here </summary>
+                    <details class="fancy-accordion"><summary><span contenteditable="true"> Header Content Here</span></summary>
                     
                     <div class="collapsed" contenteditable="true">
                     
@@ -489,3 +489,7 @@ function startup() {
 		wrapper.addEventListener("click", () => {setSelectedAccordion(wrapper)});
 	}
 }
+
+
+
+
