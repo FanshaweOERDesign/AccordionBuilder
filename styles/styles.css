@@ -6,6 +6,10 @@ body {
   background-image: url(../images/fanshawe_wallpaper.jpg);
 }
 
+[contenteditable] {
+  outline: 0px solid transparent;
+}
+
 .row {
   display: flex;
   flex-direction: row;
@@ -282,6 +286,12 @@ select {
   
   position: relative;
   
+  }
+
+  .fancy-accordion-wrapper h2, .fancy-accordion-wrapper h3, .fancy-accordion-wrapper h4, .fancy-accordion-wrapper h5, .fancy-accordion-wrapper h6 {
+
+    margin: 0 !important;
+
   }
   
   details.fancy-accordion {
