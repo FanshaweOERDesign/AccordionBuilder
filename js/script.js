@@ -296,7 +296,9 @@ background-color: #fff;
 
 color: #000;
 
-padding: 0px;
+padding: 0;
+  
+  overflow: visible;
 
 }
 
@@ -308,7 +310,9 @@ font-size: 1.25em;
 
 text-indent: 30px;
 
-background-color: #0b6396;;
+background-color: #0b6396;
+
+list-style: none;
 
 color: #fff;
 
@@ -324,13 +328,25 @@ border-radius: 10px 10px 0 0;
 
 }
 
-.collapsed {
+details.fancy-accordion > .collapsed {
+  padding: 20px;
 
-padding: 20px;
+margin-bottom: 10px;
+}
+  
 
-margin-bottom: 10px; }
+details.fancy-accordion > .collapsed {
+  display: none;
+}
 
-/* # The Rotating Marker # */
+details.fancy-accordion[open] > .collapsed {
+  
+display: block;
+
+animation: details-show 750ms ease-in-out;
+  }
+
+// The Rotating Marker
 
 details.fancy-accordion summary::marker {
 
@@ -358,7 +374,7 @@ transform: rotate(90deg);
 
 transform: ease 1s; }
 
-/* # The Sliding Summary # */
+// The Sliding Summary
 
 @keyframes details-show {
 
@@ -368,11 +384,20 @@ opacity: 0;
 
 transform: var(--details-translate, translateY(-0.5em)); } }
 
-details.fancy-accordion[open] > *:not(summary) {
+details[open] iframe {
+  animation: refresh 0.2s;
+}
 
-animation: details-show 750ms ease-in-out; }
+@keyframes refresh {
+  from {
+    transform: scale(0.99);
+  }
+  to {
+    transform: scale(1);
+  }
+}
 
-/* End of Accordion */
+/* End of Fancy Fancy Accordion */
 	`
 	Prism.highlightElement(cssOutput);
 }
