@@ -284,7 +284,7 @@ position: relative;
 
 }
 
-details.fancy-accordion {
+.fancy-accordion {
 
 margin-bottom: -45px;
 
@@ -302,7 +302,7 @@ padding: 0;
 
 }
 
-details.fancy-accordion > summary {
+.fancy-accordion > summary, .fancy-accordion > .summary {
 
 padding: 10px;
 
@@ -328,7 +328,12 @@ border-radius: 10px 10px 0 0;
 
 }
 
-details.fancy-accordion > .collapsed {
+.fancy-accordion > .summary {
+border-radius: 10px 10px 0 0;
+font-weight: bold;
+}
+
+.fancy-accordion > .collapsed {
   padding: 20px;
 
 margin-bottom: 10px;
